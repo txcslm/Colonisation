@@ -1,4 +1,5 @@
-using CastleExample.Scripts;
+using BaseExample.Scripts;
+using ResourceExample.Scripts;
 using UnitExample.Scripts.Units.StateMachine;
 using UnitExample.Scripts.Units.StateMachine.States;
 using UnityEngine;
@@ -7,15 +8,16 @@ namespace UnitExample.Scripts.Units
 {
     public class Unit : MonoBehaviour
     {
-        [SerializeField] private Base _base;
-
         private UnitStateMachine _stateMachine;
 
-        public bool IsFree { get; set; }
+        public bool IsFree { get; private set; } = true;
+
         public Vector3 Target { get; private set; }
 
-        private void Awake() =>
+        private void Awake()
+        {
             _stateMachine = new UnitStateMachine(this);
+        }
 
         private void Start()
         {
@@ -29,6 +31,12 @@ namespace UnitExample.Scripts.Units
         {
             Debug.Log($"Setting target for {gameObject.name} to {target}");
             Target = target;
+            
+        }
+        
+        public void SetFree(bool isFree)
+        {
+            IsFree = isFree;
         }
     }
 }

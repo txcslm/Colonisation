@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using ResourceExample.Scripts;
+using UnitExample.Scripts.Units.StateMachine.Payloads;
 using UnitExample.Scripts.Units.StateMachine.States;
 using UnityEngine;
 
@@ -34,18 +36,18 @@ namespace UnitExample.Scripts.Units.StateMachine
 				state.Enter();
 		}
 
-		public void SwitchState<TParametrState>(IPayload payload) where TParametrState : IUpdatable
+		public void SwitchState<TParameterState>(IPayload payload) where TParameterState : IUpdatable
 		{
-			if (GetNewState<TParametrState>())
+			if (GetNewState<TParameterState>())
 				return;
 
-			if (_currentState is IParametrState state)
+			if (_currentState is IParameterState state)
 				state.Enter(payload);
 		}
 
-		private bool GetNewState<TParametrState>() where TParametrState : IUpdatable
+		private bool GetNewState<TParameterState>() where TParameterState : IUpdatable
 		{
-			if (_states.TryGetValue(typeof(TParametrState), out IUpdatable newState) == false)
+			if (_states.TryGetValue(typeof(TParameterState), out IUpdatable newState) == false)
 				return true;
 
 			_currentState?.Exit();

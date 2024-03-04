@@ -2,11 +2,12 @@ using UnitExample.Scripts.Units.StateMachine.Payloads;
 
 namespace UnitExample.Scripts.Units.StateMachine.States
 {
-	public class AchieveTargetState : IParametrState
+	public class AchieveTargetState : IParameterState
 	{
 		private readonly IStateSwitcher _stateSwitcher;
+		private IPayload _payload;
 
-		public AchieveTargetState ( IStateSwitcher stateSwitcher)
+		public AchieveTargetState(IStateSwitcher stateSwitcher)
 		{
 			_stateSwitcher = stateSwitcher;
 		}
@@ -17,13 +18,12 @@ namespace UnitExample.Scripts.Units.StateMachine.States
 
 		public void Enter<TPayload>(TPayload payload) where TPayload : IPayload
 		{
-			if (payload is Vector3Payload target == false)
-				return;
+			_payload = payload;
 
-			if (target.IsBase)
-				_stateSwitcher.SwitchState<DeliverResourceState>();
+			if (_payload is Vector3Payload { IsBase: false })
+				_stateSwitcher.SwitchState<CollectResourceState>(_payload);
 			else
-				_stateSwitcher.SwitchState<CollectResourceState>();
+				_stateSwitcher.SwitchState<DeliverResourceState>();
 		}
 	}
 }

@@ -1,9 +1,10 @@
-	using System.Collections;
-	using System.Collections.Generic;
-	using UnityEngine;
-	using Unit = UnitExample.Scripts.Units.Unit;
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using Unit = UnitExample.Scripts.Units.Unit;
 
-	namespace CastleExample.Scripts
+	namespace BaseExample.Scripts
 	{
 		public class Base : MonoBehaviour
 		{
@@ -16,9 +17,18 @@
 
 			private bool _isWork;
 
-			private void Start()
+			private void OnEnable()
 			{
 				_isWork = true;
+			}
+
+			private void OnDisable()
+			{
+				_isWork = false;
+			}
+
+			private void Start()
+			{
 				_waiting = new WaitForSeconds(_delay);
 				StartCoroutine(SearchResourceCoroutine());
 			}
@@ -32,7 +42,7 @@
 
 			private IEnumerator SearchResourceCoroutine()
 			{
-				_units.ForEach(unit => unit.IsFree = true);
+				_units.ForEach(unit => unit.SetFree(true));
 
 				while (_isWork)
 				{
@@ -49,7 +59,7 @@
 							if (i < colliders.Length && _units[i].IsFree)
 							{
 								_units[i].SetTarget(colliders[i].transform.position);
-								_units[i].IsFree = false;
+								_units[i].SetFree(false);
 							}
 							else
 							{
@@ -59,7 +69,7 @@
 					}
 					else
 					{
-						_units.ForEach(unit => unit.IsFree = true);
+						_units.ForEach(unit => unit.SetFree(true));
 					}
 
 					yield return _waiting;

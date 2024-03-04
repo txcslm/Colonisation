@@ -17,18 +17,15 @@ namespace UnitExample.Scripts.Units.StateMachine.States
 
 			public void Update(float deltaTime)
 			{
-				if (_unit.IsFree && _unit.Target != Vector3.zero)
+				if (_unit.Target != Vector3.zero)
 				{
-					_unit.IsFree = false;
 					Debug.Log($" Target pos: {_unit.Target}");
 					_stateSwitcher.SwitchState<MovementState>(new Vector3Payload(_unit.Target, false));
 				}
 			}
 
-			public void Enter()
-			{
+			public void Enter() =>
 				Debug.Log("IdleState : Enter");
-			}
 
 			public void Exit() =>
 				Debug.Log("IdleState: Exit");
