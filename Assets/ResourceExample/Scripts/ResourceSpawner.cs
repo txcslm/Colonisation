@@ -8,7 +8,7 @@ namespace ResourceExample.Scripts
 {
 	public class ResourceSpawner : MonoBehaviour
 	{
-		private const float Delay = 1f;
+		private const float Delay = 3f;
 
 		[SerializeField] private Resource _resource;
 		[SerializeField] private List<Transform> _points;

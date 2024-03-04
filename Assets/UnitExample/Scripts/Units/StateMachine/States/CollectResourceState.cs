@@ -19,12 +19,12 @@ namespace UnitExample.Scripts.Units.StateMachine.States
 
 		public void Enter<TPayload>(TPayload payload) where TPayload : IPayload
 		{
-
-			if (payload is Vector3Payload resourcePayload)
+			if (payload is Vector3Payload vector3Payload)
 			{
 				Debug.Log("Enter: CollectResourceState");
-				_currentResource.transform.position = resourcePayload.Position;
-				AttachResourceToUnit();
+				_unit.SetTarget(vector3Payload.Position);
+				Resource currentResource = _unit.GetCurrentResource();
+				AttachResourceToUnit(currentResource);
 				_stateSwitcher.SwitchState<MovementState>(new Vector3Payload(_unit.Target, true));
 			}
 			else
@@ -33,11 +33,14 @@ namespace UnitExample.Scripts.Units.StateMachine.States
 			}
 		}
 
-		private void AttachResourceToUnit()
+		private void AttachResourceToUnit(Resource currentResource)
 		{
-			Debug.Log("Attach");
-			_currentResource.transform.parent = _unit.transform;
-			_currentResource.transform.localPosition = new Vector3(0, 3, 0);
+			if (currentResource != null)
+			{
+				Debug.Log("Attach");
+				currentResource.transform.parent = _unit.transform;
+				currentResource.transform.localPosition = new Vector3(0, 3, 0);
+			}
 		}
 
 		public void Exit() { }

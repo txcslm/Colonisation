@@ -1,3 +1,4 @@
+using UnitExample.Scripts.Units;
 using UnityEngine;
 
 namespace ResourceExample.Scripts

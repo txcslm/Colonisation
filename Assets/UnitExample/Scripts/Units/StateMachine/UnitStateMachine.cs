@@ -14,6 +14,7 @@ namespace UnitExample.Scripts.Units.StateMachine
 
 		public UnitStateMachine(Unit unit)
 		{
+			
 			_states = new Dictionary<Type, IUpdatable>()
 			{
 				[typeof(IdleState)] = new IdleState(this, unit),
