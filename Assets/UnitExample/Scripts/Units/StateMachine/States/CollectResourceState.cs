@@ -20,12 +20,12 @@ namespace UnitExample.Scripts.Units.StateMachine.States
 		public void Enter<TPayload>(TPayload payload) where TPayload : IPayload
 		{
 
-			if (payload is Vector3Payload vector3Payload)
+			if (payload is Vector3Payload resourcePayload)
 			{
 				Debug.Log("Enter: CollectResourceState");
-				_currentResource = vector3Payload.Resource;
+				_currentResource.transform.position = resourcePayload.Position;
 				AttachResourceToUnit();
-				_stateSwitcher.SwitchState<MovementState>(new Vector3Payload(_unit.Target, true, _currentResource));
+				_stateSwitcher.SwitchState<MovementState>(new Vector3Payload(_unit.Target, true));
 			}
 			else
 			{
