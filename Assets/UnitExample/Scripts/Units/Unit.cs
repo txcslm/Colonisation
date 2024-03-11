@@ -1,60 +1,67 @@
+using System.Collections;
 using BaseExample.Scripts;
 using ResourceExample.Scripts;
-using UnitExample.Scripts.Units.StateMachine;
-using UnitExample.Scripts.Units.StateMachine.States;
 using UnityEngine;
+using UnityEngine.UI;
 
 namespace UnitExample.Scripts.Units
 {
-	public class Unit : MonoBehaviour
-	{
-		private UnitStateMachine _stateMachine;
-		private Resource _currentResource;
+    public class Unit : MonoBehaviour
+    {
+        [SerializeField] private Transform _bag;
+        [SerializeField] private float _speed;
+        
+        private Resource _targetResource;
+        private Base _base;
 
-		public bool IsFree { get; private set; } = true;
+        public bool IsFree { get; private set; } = true;
 
-		public Vector3 Target { get; private set; }
+        public void SetTarget(Resource target)
+        {
+            _targetResource = target;
+        }
 
-		private void Awake()
-		{
-			_stateMachine = new UnitStateMachine(this);
-		}
+        public void Initialize(Base @base)
+        {
+            _base = @base;
+        }
 
-		private void Start()
-		{
-			_stateMachine.SwitchState<IdleState>();
-		}
+        public void Run()
+        {
+            StartCoroutine(MoveToTargetCoroutine());
+        }
+        
+        private void Take()
+        {
+            _targetResource.transform.SetParent(transform);
+            _targetResource.transform.position = _bag.position;
+        }
 
-		private void Update() =>
-			_stateMachine.Update(Time.deltaTime);
+        private IEnumerator MoveToTargetCoroutine()
+        {
+            if (_targetResource == null)
+                yield break;
 
-		public void SetTarget(Vector3 target)
-		{
-			Debug.Log($"Setting target for {gameObject.name} to {target}");
-			Target = target;
-		}
+            IsFree = false;
+            yield return Move(_targetResource.transform);
+            Take();
+            IsFree = true;
+            yield return Move(_base.transform);
+            Drop();
+        }
 
-		public void SetCurrentResource(Resource resource)
-		{
-			_currentResource = resource;
-		}
+        private void Drop()
+        {
+            Destroy(_targetResource.gameObject);
+        }
 
-		public Resource GetCurrentResource()
-		{
-			return _currentResource;
-		}
-
-		public void SetFree(bool isFree)
-		{
-			IsFree = isFree;
-		}
-
-		// private void OnTriggerEnter(Collider other)
-		// {
-		// 	if (TryGetComponent(out Resource resource))
-		// 	{
-		// 		Destroy(resource.gameObject);
-		// 	}
-		// }
-	}
+        private IEnumerator Move(Transform target)
+        {
+            while (Vector3.Distance(transform.position, target.position) > Mathf.Epsilon)
+            {
+                transform.position = Vector3.MoveTowards(transform.position, target.position, _speed * Time.deltaTime);
+                yield return null;
+            }
+        }
+    }
 }

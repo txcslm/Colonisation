@@ -1,79 +1,89 @@
-using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using ResourceExample.Scripts;
+using UnitExample.Scripts.Units;
 using UnityEngine;
-using Unit = UnitExample.Scripts.Units.Unit;
 
-	namespace BaseExample.Scripts
+namespace BaseExample.Scripts
+{
+	[RequireComponent(typeof(UnitFabric))]
+	[RequireComponent(typeof(ResourceScanner))]
+	public class Base : MonoBehaviour
 	{
-		public class Base : MonoBehaviour
+		private const float MaxUnitsCount = 3;
+
+		private readonly List<Unit> _units = new List<Unit>();
+
+		private UnitFabric _fabric;
+		private ResourceScanner _scanner;
+
+		private void Awake()
 		{
-			[SerializeField] [Range(0, 100)] private float _sphereRadius = 50f;
-			[SerializeField] private List<Unit> _units;
-			[SerializeField] private float _delay;
-			[SerializeField] private LayerMask _resourceLayer;
+			_fabric = GetComponent<UnitFabric>();
+			_scanner = GetComponent<ResourceScanner>();
+		}
 
-			private WaitForSeconds _waiting;
+		private void Start()
+		{
+			CreateUnit();
 
-			private bool _isWork;
+			StartCoroutine(SearchResourceCoroutine());
+		}
 
-			private void OnEnable()
+		private void Update()
+		{
+			if (_units.Count < MaxUnitsCount)
 			{
-				_isWork = true;
-			}
-
-			private void OnDisable()
-			{
-				_isWork = false;
-			}
-
-			private void Start()
-			{
-				_waiting = new WaitForSeconds(_delay);
-				StartCoroutine(SearchResourceCoroutine());
-			}
-
-			private void OnDrawGizmos()
-			{
-				Gizmos.color = Color.red;
-
-				Gizmos.DrawWireSphere(transform.position, _sphereRadius);
-			}
-
-			private IEnumerator SearchResourceCoroutine()
-			{
-				_units.ForEach(unit => unit.SetFree(true));
-
-				while (_isWork)
-				{
-					Collider[] colliders = Physics.OverlapSphere(transform.position, _sphereRadius, _resourceLayer.value);
-
-					if (colliders.Length > 0)
-					{
-						Debug.Log($"Found {colliders.Length} colliders.");
-						
-						Debug.Log("LetsGOOOOO!");
-
-						for (int i = 0; i < _units.Count; i++)
-						{
-							if (i < colliders.Length && _units[i].IsFree)
-							{
-								_units[i].SetTarget(colliders[i].transform.position);
-								_units[i].SetFree(false);
-							}
-							else
-							{
-								Debug.LogWarning("Not enough colliders for all free units!");
-							}
-						}
-					}
-					else
-					{
-						_units.ForEach(unit => unit.SetFree(true));
-					}
-
-					yield return _waiting;
-				}
+				CreateUnit();
 			}
 		}
+
+		private void CreateUnit()
+		{
+			Unit unit = _fabric.SpawnUnit();
+			_units.Add(unit);
+			
+			unit.Initialize(this);
+		}
+
+		private IEnumerator SearchResourceCoroutine()
+		{
+			WaitForSeconds waitScanDelay = new WaitForSeconds(_scanner.ScanDelay);
+
+			while (enabled)
+			{
+				Queue<Resource> freeResources = _scanner.Scan();
+				Queue<Unit> freeUnits = FindFreeUnits();
+
+				SendBots(freeUnits, freeResources);
+				yield return waitScanDelay;
+			}
+		}
+
+		private void SendBots(Queue<Unit> freeUnits, Queue<Resource> freeResources)
+		{
+			while (freeResources.TryPeek(out Resource resource) && freeUnits.TryPeek(out Unit unit))
+			{
+				if (resource.IsOrdered)
+				{
+					freeResources.Dequeue();
+					continue;
+				}
+
+				freeUnits.Dequeue();
+
+				resource.SetOrderedStatus();
+				unit.SetTarget(resource);
+				unit.Run();
+			}
+		}
+
+		private Queue<Unit> FindFreeUnits()
+		{
+			IEnumerable<Unit> enumerable = _units.Where(unit => unit.IsFree == true);
+
+			return new Queue<Unit>(enumerable);
+		}
 	}
+}
