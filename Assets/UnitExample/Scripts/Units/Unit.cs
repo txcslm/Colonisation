@@ -12,6 +12,7 @@ namespace UnitExample.Scripts.Units
         [SerializeField] private float _speed;
         
         private Resource _targetResource;
+        private ResourceStorage _storage;
         private Base _base;
 
         public bool IsFree { get; private set; } = true;
@@ -21,9 +22,10 @@ namespace UnitExample.Scripts.Units
             _targetResource = target;
         }
 
-        public void Initialize(Base @base)
+        public void Initialize(Base unitBase, ResourceStorage storage)
         {
-            _base = @base;
+            _storage = storage;
+            _base = unitBase;
         }
 
         public void Run()
@@ -52,6 +54,8 @@ namespace UnitExample.Scripts.Units
 
         private void Drop()
         {
+            _storage.UpdateResourcesCount(1);
+            
             Destroy(_targetResource.gameObject);
         }
 

@@ -9,19 +9,23 @@ namespace BaseExample.Scripts
 {
 	[RequireComponent(typeof(UnitFabric))]
 	[RequireComponent(typeof(ResourceScanner))]
+	[RequireComponent(typeof(ResourceStorage))]
 	public class Base : MonoBehaviour
 	{
 		private const float MaxUnitsCount = 3;
+		private const int UnitPrice = 3;
 
 		private readonly List<Unit> _units = new List<Unit>();
 
 		private UnitFabric _fabric;
 		private ResourceScanner _scanner;
+		private ResourceStorage _resourceStorage;
 
 		private void Awake()
 		{
 			_fabric = GetComponent<UnitFabric>();
 			_scanner = GetComponent<ResourceScanner>();
+			_resourceStorage = GetComponent<ResourceStorage>();
 		}
 
 		private void Start()
@@ -33,9 +37,15 @@ namespace BaseExample.Scripts
 
 		private void Update()
 		{
-			if (_units.Count < MaxUnitsCount)
+			BuyUnit();
+		}
+
+		private void BuyUnit()
+		{
+			if (_resourceStorage.ResourcesCount >= UnitPrice && _units.Count < MaxUnitsCount)
 			{
 				CreateUnit();
+				_resourceStorage.UpdateResourcesCount(-UnitPrice);
 			}
 		}
 
@@ -43,8 +53,8 @@ namespace BaseExample.Scripts
 		{
 			Unit unit = _fabric.SpawnUnit();
 			_units.Add(unit);
-			
-			unit.Initialize(this);
+
+			unit.Initialize(this, _resourceStorage);
 		}
 
 		private IEnumerator SearchResourceCoroutine()
