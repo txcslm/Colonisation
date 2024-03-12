@@ -41,11 +41,11 @@ namespace BaseExample.Scripts
         {
             if (_resourceStorage.ResourcesCount >= UnitPrice && _units.Count < MaxUnitsCount)
             {
-                BuyUnit();
+                PurchaseUnit();
             }
         }
 
-        private void BuyUnit()
+        private void PurchaseUnit()
         {
             CreateUnit();
             _resourceStorage.DecreaseResourceCount(UnitPrice);
