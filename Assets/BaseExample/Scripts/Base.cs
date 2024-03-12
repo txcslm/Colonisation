@@ -7,93 +7,108 @@ using UnityEngine;
 
 namespace BaseExample.Scripts
 {
-	[RequireComponent(typeof(UnitFabric))]
-	[RequireComponent(typeof(ResourceScanner))]
-	[RequireComponent(typeof(ResourceStorage))]
+	[RequireComponent(typeof(UnitFabric), typeof(ResourceScanner), typeof(ResourceStorage))]
 	public class Base : MonoBehaviour
 	{
-		private const float MaxUnitsCount = 3;
-		private const int UnitPrice = 3;
+        private const float MaxUnitsCount = 3;
+        private const int UnitPrice = 3;
 
-		private readonly List<Unit> _units = new List<Unit>();
+        private readonly List<Unit> _units = new List<Unit>();
+        private readonly List<Resource> _orderedResources = new List<Resource>();
 
-		private UnitFabric _fabric;
-		private ResourceScanner _scanner;
-		private ResourceStorage _resourceStorage;
+        private UnitFabric _fabric;
+        private ResourceScanner _scanner;
+        private ResourceStorage _resourceStorage;
 
-		private void Awake()
-		{
-			_fabric = GetComponent<UnitFabric>();
-			_scanner = GetComponent<ResourceScanner>();
-			_resourceStorage = GetComponent<ResourceStorage>();
-		}
+        private void Awake()
+        {
+            _fabric = GetComponent<UnitFabric>();
+            _scanner = GetComponent<ResourceScanner>();
+            _resourceStorage = GetComponent<ResourceStorage>();
+        }
 
-		private void Start()
-		{
-			CreateUnit();
+        private void Start()
+        {
+            CreateUnit();
 
-			StartCoroutine(SearchResourceCoroutine());
-		}
+            StartCoroutine(ManageUnitsCoroutine());
+        }
 
-		private void Update()
-		{
-			BuyUnit();
-		}
+        private void Update() =>
+            CheckResourceChange();
 
-		private void BuyUnit()
-		{
-			if (_resourceStorage.ResourcesCount >= UnitPrice && _units.Count < MaxUnitsCount)
-			{
-				CreateUnit();
-				_resourceStorage.UpdateResourcesCount(-UnitPrice);
-			}
-		}
+        private void CheckResourceChange()
+        {
+            if (_resourceStorage.ResourcesCount >= UnitPrice && _units.Count < MaxUnitsCount)
+            {
+                BuyUnit();
+            }
+        }
 
-		private void CreateUnit()
-		{
-			Unit unit = _fabric.SpawnUnit();
-			_units.Add(unit);
+        private void BuyUnit()
+        {
+            CreateUnit();
+            _resourceStorage.DecreaseResourceCount(UnitPrice);
+        }
 
-			unit.Initialize(this, _resourceStorage);
-		}
+        private void CreateUnit()
+        {
+            Unit unit = _fabric.SpawnUnit();
+            _units.Add(unit);
 
-		private IEnumerator SearchResourceCoroutine()
-		{
-			WaitForSeconds waitScanDelay = new WaitForSeconds(_scanner.ScanDelay);
+            unit.Initialize(this, _resourceStorage);
+        }
 
-			while (enabled)
-			{
-				Queue<Resource> freeResources = _scanner.Scan();
-				Queue<Unit> freeUnits = FindFreeUnits();
+        private IEnumerator ManageUnitsCoroutine()
+        {
+            WaitForSeconds waitScanDelay = new WaitForSeconds(_scanner.ScanDelay);
 
-				SendBots(freeUnits, freeResources);
-				yield return waitScanDelay;
-			}
-		}
+            while (enabled)
+            {
+                Queue<Resource> freeResources = _scanner.Scan();
+                Queue<Unit> freeUnits = FindFreeUnits();
 
-		private void SendBots(Queue<Unit> freeUnits, Queue<Resource> freeResources)
-		{
-			while (freeResources.TryPeek(out Resource resource) && freeUnits.TryPeek(out Unit unit))
-			{
-				if (resource.IsOrdered)
-				{
-					freeResources.Dequeue();
-					continue;
-				}
+                SendUnits(freeUnits, freeResources);
+                yield return waitScanDelay;
+            }
+        }
 
-				freeUnits.Dequeue();
+        private void SendUnits(Queue<Unit> freeUnits, Queue<Resource> freeResources)
+        {
+            while (freeResources.TryPeek(out Resource resource) && freeUnits.TryPeek(out Unit unit))
+            {
+                if (IsResourceOrdered(resource))
+                {
+                    freeResources.Dequeue();
+                    continue;
+                }
 
-				resource.SetOrderedStatus();
-				unit.SetTarget(resource);
-				unit.Run();
-			}
-		}
+                freeUnits.Dequeue();
 
-		private Queue<Unit> FindFreeUnits()
-		{
-			IEnumerable<Unit> enumerable = _units.Where(unit => unit.IsFree == true);
+                OrderResource(resource);
+                unit.SetTarget(resource);
+                unit.Run();
+            }
+        }
 
-			return new Queue<Unit>(enumerable);
-		}
+        private void OrderResource(Resource resource) =>
+            _orderedResources.Add(resource);
+
+        private bool IsResourceOrdered(Resource resource) =>
+            _orderedResources.Contains(resource);
+
+        private Queue<Unit> FindFreeUnits()
+        {
+            List<Unit> busyUnits = _units.Where(unit => unit.IsFree == false).ToList();
+            List<Unit> freeUnits = _units.Where(unit => unit.IsFree).ToList();
+
+            foreach (Unit busyUnit in busyUnits)
+            {
+                _units.Remove(busyUnit);
+                _units.Add(busyUnit);
+            }
+
+            return freeUnits.Count > 0 ? new Queue<Unit>(freeUnits) : null;
+        }
 	}
 }

@@ -47,14 +47,14 @@ namespace UnitExample.Scripts.Units
             IsFree = false;
             yield return Move(_targetResource.transform);
             Take();
-            IsFree = true;
             yield return Move(_base.transform);
             Drop();
+            IsFree = true;
         }
 
         private void Drop()
         {
-            _storage.UpdateResourcesCount(1);
+            _storage.IncreaseResourcesCount(1);
             
             Destroy(_targetResource.gameObject);
         }

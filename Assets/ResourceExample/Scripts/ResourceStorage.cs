@@ -1,3 +1,4 @@
+using System;
 using TMPro;
 using UnityEngine;
 
@@ -5,15 +6,40 @@ namespace ResourceExample.Scripts
 {
 	public class ResourceStorage : MonoBehaviour
 	{
-		[SerializeField] private TextMeshProUGUI _resourcesCountTMP;
+		private int _resourcesCount;
 		
-		public int ResourcesCount { get; private set; }
+		public event Action OnResourcesCountChanged;
 
-		public void UpdateResourcesCount(int amount)
+		public int ResourcesCount
 		{
+			get => _resourcesCount;
+			private set
+			{
+				if (_resourcesCount == value)
+					return;
+				
+				_resourcesCount = value;
+				OnResourcesCountChanged?.Invoke();
+			}
+		}
+
+		public void IncreaseResourcesCount(int amount)
+		{
+			if (amount <= 0)
+				throw new ArgumentOutOfRangeException(nameof(amount));
+
 			ResourcesCount += amount;
+		}
+
+		public void DecreaseResourceCount(int amount)
+		{
+			if (amount <= 0)
+				throw new ArgumentOutOfRangeException(nameof(amount));
 			
-			_resourcesCountTMP.text = ResourcesCount.ToString();
+			if (ResourcesCount <= 0)
+				return;
+
+			ResourcesCount -= amount;
 		}
 	}
 }
