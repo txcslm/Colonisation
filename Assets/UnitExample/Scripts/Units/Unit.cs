@@ -47,9 +47,9 @@ namespace UnitExample.Scripts.Units
             IsFree = false;
             yield return Move(_targetResource.transform);
             Take();
+            IsFree = true;
             yield return Move(_base.transform);
             Drop();
-            IsFree = true;
         }
 
         private void Drop()

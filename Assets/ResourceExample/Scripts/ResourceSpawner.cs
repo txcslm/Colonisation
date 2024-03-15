@@ -1,9 +1,6 @@
-using System;
 using System.Collections;
-using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
-using Object = UnityEngine.Object;
 using Random = UnityEngine.Random;
 
 namespace ResourceExample.Scripts
@@ -67,7 +64,8 @@ namespace ResourceExample.Scripts
 		private bool IsTooCloseToOtherResources(Vector3 point)
 		{
 			float minDistance = 2.0f;
-			
+
+			// Проверяем все существующие ресурсы
 			return FindObjectsOfType<Resource>()
 				.Select(existingResource => Vector3.Distance(existingResource.transform.position, point))
 				.Any(distance => distance < minDistance);
