@@ -1,5 +1,9 @@
 fileFormatVersion: 2
+<<<<<<<< HEAD:Assets/FlagExample.meta
 guid: 49d7892ff565e044ca968299e54fda8b
+========
+guid: dbf7038cb39473542a0201fbb694ab91
+>>>>>>>> e091bee4be75e8e23f11b449de4558ac073d084d:Assets/BaseExample/Animations.meta
 folderAsset: yes
 DefaultImporter:
   externalObjects: {}
