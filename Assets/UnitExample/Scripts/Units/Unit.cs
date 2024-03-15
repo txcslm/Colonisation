@@ -54,7 +54,7 @@ namespace UnitExample.Scripts.Units
 
         private void Drop()
         {
-            _storage.UpdateResourcesCount(1);
+            _storage.IncreaseResourcesCount(1);
             
             Destroy(_targetResource.gameObject);
         }

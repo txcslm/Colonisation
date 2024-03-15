@@ -12,7 +12,7 @@ GameObject:
   - component: {fileID: 3180352314849766836}
   - component: {fileID: 2730193126044670576}
   - component: {fileID: 7894369682313426158}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: ResourceCount
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -159,7 +159,7 @@ GameObject:
   - component: {fileID: 8006064556880505758}
   - component: {fileID: 5610157189971892721}
   - component: {fileID: 475361327412755350}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Cube
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -243,7 +243,7 @@ GameObject:
   - component: {fileID: 3948966134031164654}
   - component: {fileID: 605553874076469458}
   - component: {fileID: 2195971256416379340}
-  m_Layer: 5
+  m_Layer: 8
   m_Name: Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -346,8 +346,8 @@ GameObject:
   - component: {fileID: 3707725164481215089}
   - component: {fileID: 7619732472145190901}
   - component: {fileID: 7295491071782869726}
-  - component: {fileID: 2294148771626190495}
-  m_Layer: 0
+  - component: {fileID: 6760558501971132631}
+  m_Layer: 8
   m_Name: Base
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -410,7 +410,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5072a16107394250a7836a5e45df12b3, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
---- !u!114 &2294148771626190495
+--- !u!114 &6760558501971132631
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -435,7 +435,7 @@ GameObject:
   - component: {fileID: 17094258038376313}
   - component: {fileID: 2776718624699984688}
   - component: {fileID: 6860687117775476360}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Model
   m_TagString: Untagged
   m_Icon: {fileID: 0}
