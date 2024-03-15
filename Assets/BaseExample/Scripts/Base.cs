@@ -7,11 +7,12 @@ using UnityEngine;
 
 namespace BaseExample.Scripts
 {
-	[RequireComponent(typeof(UnitFabric), typeof(ResourceScanner), typeof(ResourceStorage))]
-	public class Base : MonoBehaviour
-	{
+    [RequireComponent(typeof(UnitFabric), typeof(ResourceScanner), typeof(ResourceStorage))] 
+    public class Base : MonoBehaviour 
+    {
         private const float MaxUnitsCount = 3;
         private const int UnitPrice = 3;
+        private const int BasePrice = 10;
 
         private readonly List<Unit> _units = new List<Unit>();
         private readonly List<Resource> _orderedResources = new List<Resource>();
@@ -19,7 +20,14 @@ namespace BaseExample.Scripts
         private UnitFabric _fabric;
         private ResourceScanner _scanner;
         private ResourceStorage _resourceStorage;
+        private Status _currentStatus;
 
+        private enum Status
+        {
+            Harvest,
+            Build
+        }
+        
         private void Awake()
         {
             _fabric = GetComponent<UnitFabric>();
@@ -62,9 +70,11 @@ namespace BaseExample.Scripts
         private IEnumerator ManageUnitsCoroutine()
         {
             WaitForSeconds waitScanDelay = new WaitForSeconds(_scanner.ScanDelay);
+            Debug.Log("manage");
 
             while (enabled)
             {
+                Debug.Log("While");
                 Queue<Resource> freeResources = _scanner.Scan();
                 Queue<Unit> freeUnits = FindFreeUnits();
 
@@ -75,8 +85,10 @@ namespace BaseExample.Scripts
 
         private void SendUnits(Queue<Unit> freeUnits, Queue<Resource> freeResources)
         {
+            Debug.Log("SendUnits");
             while (freeResources.TryPeek(out Resource resource) && freeUnits.TryPeek(out Unit unit))
             {
+                Debug.Log("Send While");
                 if (IsResourceOrdered(resource))
                 {
                     freeResources.Dequeue();
@@ -109,6 +121,6 @@ namespace BaseExample.Scripts
             }
 
             return freeUnits.Count > 0 ? new Queue<Unit>(freeUnits) : null;
-        }
-	}
+        } 
+    }
 }

@@ -23,6 +23,9 @@ namespace ResourceExample.Scripts
 			}
 		}
 
+		public bool CanPay(int amount) =>
+			_resourcesCount == amount;
+
 		public void IncreaseResourcesCount(int amount)
 		{
 			if (amount <= 0)
