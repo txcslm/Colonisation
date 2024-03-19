@@ -17,10 +17,8 @@ namespace UnitExample.Scripts.Units
 
         public bool IsFree { get; private set; } = true;
 
-        public void SetTarget(Resource target)
-        {
+        public void SetTarget(Resource target) =>
             _targetResource = target;
-        }
 
         public void Initialize(Base unitBase, ResourceStorage storage)
         {

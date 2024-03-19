@@ -6,10 +6,10 @@ using UnitExample.Scripts.Units;
 using UnityEngine;
 
 namespace BaseExample.Scripts
-{
-	[RequireComponent(typeof(UnitFabric), typeof(ResourceScanner), typeof(ResourceStorage))]
-	public class Base : MonoBehaviour
-	{
+{ 
+    [RequireComponent(typeof(UnitFabric), typeof(ResourceScanner), typeof(ResourceStorage))] 
+    public class Base : MonoBehaviour 
+    {
         private const float MaxUnitsCount = 3;
         private const int UnitPrice = 3;
 
@@ -109,6 +109,6 @@ namespace BaseExample.Scripts
             }
 
             return freeUnits.Count > 0 ? new Queue<Unit>(freeUnits) : null;
-        }
-	}
+        } 
+    }
 }
