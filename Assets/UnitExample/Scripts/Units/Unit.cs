@@ -2,7 +2,6 @@ using System.Collections;
 using BaseExample.Scripts;
 using ResourceExample.Scripts;
 using UnityEngine;
-using UnityEngine.UI;
 
 namespace UnitExample.Scripts.Units
 {
