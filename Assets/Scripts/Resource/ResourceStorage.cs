@@ -8,7 +8,7 @@ namespace ResourceExample.Scripts
 	{
 		private int _resourcesCount;
 		
-		public event Action OnResourcesCountChanged;
+		public event Action ResourcesCountChanged;
 
 		public int ResourcesCount
 		{
@@ -19,7 +19,7 @@ namespace ResourceExample.Scripts
 					return;
 				
 				_resourcesCount = value;
-				OnResourcesCountChanged?.Invoke();
+				ResourcesCountChanged?.Invoke();
 			}
 		}
 		

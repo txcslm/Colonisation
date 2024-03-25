@@ -14,11 +14,11 @@ namespace ResourceExample.Scripts
 			_resourcesCountTMP = GetComponent<TextMeshProUGUI>();
 			_storage = GetComponentInParent<ResourceStorage>();
 			
-			_storage.OnResourcesCountChanged += ChangeValue;
+			_storage.ResourcesCountChanged += ChangeValue;
 		}
 
 		private void OnDestroy() =>
-			_storage.OnResourcesCountChanged -= ChangeValue;
+			_storage.ResourcesCountChanged -= ChangeValue;
 
 		private void ChangeValue() =>
 			_resourcesCountTMP.text = _storage.ResourcesCount.ToString();
