@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -50,6 +51,9 @@ namespace BaseExample.Scripts
             Flag.Placed += OnFlagPlaced;
             StartCoroutine(ManageUnitsCoroutine());
         }
+
+        private void OnDisable() =>
+            Flag.Placed -= OnFlagPlaced;
 
         private void Update() => CheckResourceChange();
 
