@@ -22,6 +22,9 @@ namespace ResourceExample.Scripts
 				OnResourcesCountChanged?.Invoke();
 			}
 		}
+		
+		public bool CanPay(int amount) =>
+			_resourcesCount >= amount;
 
 		public void IncreaseResourcesCount(int amount)
 		{

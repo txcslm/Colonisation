@@ -7,7 +7,7 @@ namespace ResourceExample.Scripts
 {
 	public class ResourceSpawner : MonoBehaviour
 	{
-		private const float Delay = 2f;
+		private const float Delay = 1f;
 		private const float TwoPI = 2f * Mathf.PI;
 
 		[SerializeField] private Resource _resource;

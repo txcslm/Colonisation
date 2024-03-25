@@ -1,5 +1,6 @@
 using System.Collections;
 using BaseExample.Scripts;
+using FlagExample.Scripts;
 using ResourceExample.Scripts;
 using UnityEngine;
 
@@ -9,6 +10,7 @@ namespace UnitExample.Scripts.Units
     {
         [SerializeField] private Transform _bag;
         [SerializeField] private float _speed;
+        [SerializeField] private BaseFabric _baseFabric;
         
         private Resource _targetResource;
         private ResourceStorage _storage;
@@ -16,8 +18,9 @@ namespace UnitExample.Scripts.Units
 
         public bool IsFree { get; private set; } = true;
 
-        public void SetTarget(Resource target) =>
-            _targetResource = target;
+        public void SetHome(Base @base) => _base = @base;
+
+        public void SetTarget(Resource target) => _targetResource = target;
 
         public void Initialize(Base unitBase, ResourceStorage storage)
         {
@@ -25,15 +28,31 @@ namespace UnitExample.Scripts.Units
             _base = unitBase;
         }
 
-        public void Run()
+        public void Run() => StartCoroutine(MoveToTargetCoroutine());
+
+        public void Build(Vector3 position, Flag flag)
         {
-            StartCoroutine(MoveToTargetCoroutine());
+            StartCoroutine(BuildCoroutine(position, flag));
         }
-        
+
+        private IEnumerator BuildCoroutine(Vector3 position, Flag flag)
+        {
+            yield return Move(position);
+            flag.Hide();
+            _baseFabric.Create(position);
+            IsFree = true;
+        }
+
         private void Take()
         {
             _targetResource.transform.SetParent(transform);
             _targetResource.transform.position = _bag.position;
+        }
+
+        private void Drop()
+        {
+            _storage.IncreaseResourcesCount(1);
+            Destroy(_targetResource.gameObject);
         }
 
         private IEnumerator MoveToTargetCoroutine()
@@ -42,25 +61,18 @@ namespace UnitExample.Scripts.Units
                 yield break;
 
             IsFree = false;
-            yield return Move(_targetResource.transform);
+            yield return Move(_targetResource.transform.position);
             Take();
             IsFree = true;
-            yield return Move(_base.transform);
+            yield return Move(_base.transform.position);
             Drop();
         }
 
-        private void Drop()
+        private IEnumerator Move(Vector3 target)
         {
-            _storage.IncreaseResourcesCount(1);
-            
-            Destroy(_targetResource.gameObject);
-        }
-
-        private IEnumerator Move(Transform target)
-        {
-            while (Vector3.Distance(transform.position, target.position) > Mathf.Epsilon)
+            while (Vector3.Distance(transform.position, target) > 0.01f)
             {
-                transform.position = Vector3.MoveTowards(transform.position, target.position, _speed * Time.deltaTime);
+                transform.position = Vector3.MoveTowards(transform.position, target, _speed * Time.deltaTime);
                 yield return null;
             }
         }

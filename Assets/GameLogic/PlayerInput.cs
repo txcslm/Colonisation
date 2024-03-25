@@ -1,49 +1,52 @@
 using Constants;
 using FlagExample.Scripts;
 using UnityEngine;
+using UnityEngine.Serialization;
 
-public class PlayerInput : MonoBehaviour
+namespace GameLogic
 {
-	private const int LeftMouse = 0;
-
-	private Camera _mainCamera;
-	private FlagHolder _currentFlagHolder;
-
-	private void Awake()
+	public class PlayerInput : MonoBehaviour
 	{
-		_mainCamera = Camera.main;
-	}
+		private const int LeftMouse = 0;
 
-	private void Update()
-	{
-		if (Input.GetMouseButtonDown(LeftMouse))
+		[SerializeField] private Camera _camera;
+
+		private FlagHolder _currentFlagHolder;
+
+		private void Update()
 		{
-			Ray ray = _mainCamera.ScreenPointToRay(Input.mousePosition);
-			RaycastHit2D raycastHit2D = Physics2D.Raycast(ray.origin, ray.direction, Mathf.Infinity);
-			ProcessDepartmentCollision(raycastHit2D);
-			ProcessMapCollision(raycastHit2D);
+			if (Input.GetMouseButtonDown(LeftMouse))
+			{
+				Ray ray = _camera.ScreenPointToRay(Input.mousePosition);
+
+				if (Physics.Raycast(ray, out RaycastHit hit, Mathf.Infinity))
+				{
+					ProcessDepartmentCollision(hit);
+					ProcessMapCollision(hit);
+				}
+			}
 		}
-	}
 
-	private void ProcessMapCollision(RaycastHit2D raycastHit2D)
-	{
-		int objectLayer = 1 << raycastHit2D.collider.gameObject.layer;
-
-		if (objectLayer == Layers.PlaneMask && _currentFlagHolder != null)
+		private void ProcessMapCollision(RaycastHit hit)
 		{
-			_currentFlagHolder.Place(raycastHit2D.point);
-			_currentFlagHolder = null;
+			int objectLayer = 1 << hit.collider.gameObject.layer;
+
+			if (objectLayer == Layers.PlaneMask && _currentFlagHolder != null)
+			{
+				_currentFlagHolder.Place(hit.point);
+				_currentFlagHolder = null;
+			}
 		}
-	}
 
-	private void ProcessDepartmentCollision(RaycastHit2D raycastHit2D)
-	{
-		int objectLayer = 1 << raycastHit2D.collider.gameObject.layer;
-
-		if (objectLayer == Layers.BaseMask)
+		private void ProcessDepartmentCollision(RaycastHit hit)
 		{
-			FlagHolder flagHolder = raycastHit2D.collider.GetComponent<FlagHolder>();
-			_currentFlagHolder = flagHolder;
+			int objectLayer = 1 << hit.collider.gameObject.layer;
+
+			if (objectLayer == Layers.BaseMask)
+			{
+				FlagHolder flagHolder = hit.collider.GetComponent<FlagHolder>();
+				_currentFlagHolder = flagHolder;
+			}
 		}
 	}
 }
