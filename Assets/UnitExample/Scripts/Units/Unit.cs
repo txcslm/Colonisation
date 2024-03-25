@@ -18,8 +18,6 @@ namespace UnitExample.Scripts.Units
 
         public bool IsFree { get; private set; } = true;
 
-        public void SetHome(Base @base) => _base = @base;
-
         public void SetTarget(Resource target) => _targetResource = target;
 
         public void Initialize(Base unitBase, ResourceStorage storage)
