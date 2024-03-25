@@ -45,9 +45,9 @@ namespace BaseExample.Scripts
 
         private void Start()
         {
-            const int initialResourceCount = 9;
+            const int InitialResourceCount = 9;
             
-            _resourceStorage.IncreaseResourcesCount(initialResourceCount);
+            _resourceStorage.IncreaseResourcesCount(InitialResourceCount);
             Flag.Placed += OnFlagPlaced;
             StartCoroutine(ManageUnitsCoroutine());
         }
